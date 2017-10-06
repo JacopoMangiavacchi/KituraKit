@@ -15,7 +15,6 @@
  */
 
 import Foundation
-import TypeSafeKituraClient
 import Models
 
 let client = Client(baseURL: "http://localhost:8080")
@@ -23,22 +22,21 @@ let client = Client(baseURL: "http://localhost:8080")
 extension Persistable {
 
     // setup name space based on name of model (eg. User -> user(s))
-    let typeWithType: String = String(describing: type(of: Self))
-    let typeName = String(typeWithType.characters.dropLast(5))
-    let single = "/\(typeName.lowercased())"
-    let plural = "\(single)s"
+    static var modelType: String {
+        let kind = String(describing: Swift.type(of: self))
+        return String(kind.characters.dropLast(5))
+    }
+	static var routeSingular: String { return "/\(modelType.lowercased())" }
+    static var routePlural: String { return "\(routeSingular)s" }
 
     // create
-    static func create(model: Model, respondWith: @escaping (Model) -> Void) {
-        // Perform post REST call...
-        client.post("/\(plural)", data: model) { (model: Model?) -> Void in
-            guard let model = model else {
-                return
-            }
-            return model
+    static func create(model: Model, respondWith: @escaping (Model?) -> Void) {
+        client.post(routePlural, data: model) { (model: Model?) -> Void in
+           respondWith(model)
         }
     }
 
+/*
     // read
     static func read(id: I, respondWith: @escaping (Model) -> Void) {
         // Perform get REST call...
@@ -87,6 +85,7 @@ extension Persistable {
 
         }
     }
+    */
 
 }
 
