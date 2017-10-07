@@ -19,11 +19,11 @@
 
 import Foundation
 
-public protocol Identifiable {
+public protocol Identifier {
    init(value: String) throws
 }
 
-public struct IntId: Identifiable {
+public struct IntId: Identifier {
     public let id: Int
     public init(value: String) throws {
         if let id = Int(value) {

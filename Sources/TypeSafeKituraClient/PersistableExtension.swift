@@ -17,9 +17,16 @@
 import Foundation
 import Models
 
-let client = Client(baseURL: "http://localhost:8080")
+//let client = Client(baseURL: "http://localhost:8080")
 
-extension Persistable {
+// TBD
+protocol PersistableC: Persistable {
+    // TBD
+    static var client: Client { get }
+    // TBD
+}
+
+extension PersistableC {
 
     // Set up name space based on name of model (e.g. User -> user(s))
     static var modelType: String {
