@@ -21,7 +21,7 @@ let client = Client(baseURL: "http://localhost:8080")
 
 extension Persistable {
 
-    // setup name space based on name of model (eg. User -> user(s))
+    // Set up name space based on name of model (e.g. User -> user(s))
     static var modelType: String {
         let kind = String(describing: Swift.type(of: self))
         return String(kind.characters.dropLast(5))
@@ -36,44 +36,32 @@ extension Persistable {
         }
     }
 
-/*
     // read
-    static func read(id: I, respondWith: @escaping (Model) -> Void) {
-        // Perform get REST call...
-        client.get("/\(plural)", identifier: id) { (model: Model?) -> Void in
-            guard let model = model else {
-                return
-            }
-            return model
+    static func read(id: String, respondWith: @escaping (Model?) -> Void) {
+        client.get(routePlural, identifier: id) { (model: Model?) -> Void in
+            respondWith(model)
         }
     }
-
+    
     // read all
-    static func read(respondWith: @escaping (Model) -> Void) {
-        // Perform get REST call...
-        client.get("/\(plural)") { (model: [Model]?) -> Void in
-            guard let model = model else {
-                return
-            }
-            return model
+    static func read(respondWith: @escaping ([Model]?) -> Void) {
+        client.get(routePlural) { (model: [Model]?) -> Void in
+            respondWith(model)
         }
     }
 
     // update
-    static func update(id: I, model: Model, respondWith: @escaping (Model) -> Void) {
-        // Perform put REST call...
-        client.put("/\(plural)", identifier: id, data: model) { (model: Model?) -> Void in
-            guard let model = model else {
-                return
-            }
-            return model
+    static func update(id: String, model: Model, respondWith: @escaping (Model?) -> Void) {
+        client.put(routePlural, identifier: id, data: model) { (model: Model?) -> Void in
+            respondWith(model)
         }
     }
 
+    /*
     // delete
-    static func delete(id: I, respondWith: @escaping () -> Void) {
+    static func delete(id: String, respondWith: @escaping () -> Void) {
         // Perform delete REST call...
-        client.delete("/\(plural)", identifier: id) { () -> Void in
+        client.delete(routePlural, identifier: id) { () -> Void in
 
         }
     }
