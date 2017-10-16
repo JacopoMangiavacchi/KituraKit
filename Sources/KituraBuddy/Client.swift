@@ -49,7 +49,10 @@ public class KituraBuddy {
         request.responseData { response in
             switch response.result {
             case .success(let data):
-                let items: [O]? = try? JSONDecoder().decode([O].self, from: data)
+                guard let items: [O] = try? JSONDecoder().decode([O].self, from: data) else {
+                    resultHandler(nil, ProcessHandlerError.clientDeserializationError)
+                    return
+                }
                 resultHandler(items, nil)
             case .failure(let error):
                 Log.error("GET failure: \(error)")
@@ -70,7 +73,10 @@ public class KituraBuddy {
         request.responseData { response in
             switch response.result {
             case .success(let data):
-                let items: O? = try? JSONDecoder().decode(O.self, from: data)
+                guard let items: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    resultHandler(nil, ProcessHandlerError.clientDeserializationError)
+                    return
+                }
                 resultHandler(items, nil)
             case .failure(let error):
                 Log.error("GET (single) failure: \(error)")
@@ -93,7 +99,10 @@ public class KituraBuddy {
         request.responseData { response in
             switch response.result {
             case .success(let data):
-                let item: O? = try? JSONDecoder().decode(O.self, from: data)
+                guard let item: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    resultHandler(nil, ProcessHandlerError.clientDeserializationError)
+                    return
+                }
                 resultHandler(item, nil)
             case .failure(let error):
                 Log.error("POST failure: \(error)")
@@ -116,7 +125,10 @@ public class KituraBuddy {
         request.responseData { response in
             switch response.result {
             case .success(let data):
-                let item: O? = try? JSONDecoder().decode(O.self, from: data)
+                guard let item: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    resultHandler(nil, ProcessHandlerError.clientDeserializationError)
+                    return
+                }
                 resultHandler(item, nil)
             case .failure(let error):
                 Log.error("PUT failure: \(error)")
@@ -139,7 +151,10 @@ public class KituraBuddy {
         request.responseData { response in
             switch response.result {
             case .success(let data):
-                let item: O? = try? JSONDecoder().decode(O.self, from: data)
+                guard let item: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    resultHandler(nil, ProcessHandlerError.clientDeserializationError)
+                    return
+                }
                 resultHandler(item, nil)
             case .failure(let error):
                 Log.error("PATCH failure: \(error)")

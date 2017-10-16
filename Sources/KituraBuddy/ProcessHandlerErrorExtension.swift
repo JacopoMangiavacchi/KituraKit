@@ -1,28 +1,46 @@
+/*
+ * Copyright IBM Corporation 2017
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific langua›ge governing permissions and
+ * limitations under the License.
+ */
+
+import Foundation
 import SafetyContracts
 import SwiftyRequest
 
 extension ProcessHandlerError {
-    // :-/
+    
     init(clientErrorCode: Int) {
-        rawValue = 600 + clientErrorCode
+        rawValue = clientErrorCode
     }
 
-    public static var clientErrorUnknown = ProcessHandlerError(clientErrorCode: 0)
-    public static var clientConnectionError = ProcessHandlerError(clientErrorCode: 1)
-    public static var clientNoData = ProcessHandlerError(clientErrorCode: 2)
-    public static var clientSerializationError = ProcessHandlerError(clientErrorCode: 3)
-    public static var clientEncodingError = ProcessHandlerError(clientErrorCode: 4)
-    public static var clientFileManagerError = ProcessHandlerError(clientErrorCode: 5)
-    public static var clientInvalidFile = ProcessHandlerError(clientErrorCode: 6)
-    public static var clientInvalidSubstitution = ProcessHandlerError(clientErrorCode: 7)
+    public static var clientErrorUnknown = ProcessHandlerError(clientErrorCode: 600)
+    public static var clientConnectionError = ProcessHandlerError(clientErrorCode: 601)
+    public static var clientNoData = ProcessHandlerError(clientErrorCode: 602)
+    public static var clientSerializationError = ProcessHandlerError(clientErrorCode: 603)
+    public static var clientDeserializationError = ProcessHandlerError(clientErrorCode: 604)
+    public static var clientEncodingError = ProcessHandlerError(clientErrorCode: 605)
+    public static var clientFileManagerError = ProcessHandlerError(clientErrorCode: 606)
+    public static var clientInvalidFile = ProcessHandlerError(clientErrorCode: 607)
+    public static var clientInvalidSubstitution = ProcessHandlerError(clientErrorCode: 608)
 }
 
 extension ProcessHandlerError {
     init(restError: RestError) {
         switch restError {
-        case .erroredResponseStatus(let httpCode):
-            guard let httpCode = Int(httpCode) else {
-                self = .internalServerError // NOTE: Better default?
+        case .erroredResponseStatus(let errorMsg):
+            guard let httpCode = ProcessHandlerError.httpErrorCode(from: errorMsg) else {
+                self = .internalServerError // Is there a better default?
                 return
             }
             self = ProcessHandlerError(httpCode: httpCode)
@@ -33,5 +51,12 @@ extension ProcessHandlerError {
         case .invalidFile: self = .clientInvalidFile
         case .invalidSubstitution: self = .clientInvalidSubstitution
         }
+    }
+
+    private static func httpErrorCode(from message: String) -> Int? {
+        // Here is a sample error string from RestError (erroredResponseStatus): Error HTTP Response: `Optional(404)`
+        let errorStr = String(describing: message)
+        let httpErrorCode = errorStr.trimmingCharacters(in: CharacterSet(charactersIn: "01234567890").inverted)
+        return Int(httpErrorCode)
     }
 }
