@@ -41,15 +41,15 @@ public class Controller {
         // users routes
         router.get("/users")  { (respondWith: ([User]?, RequestError?) -> Void) in
             let users = self.userStore.map({ $0.value })
-            resondWith(users, nil)
+            respondWith(users, nil)
         }
         
         router.get("/users") { (id: Int, respondWith: (User?, RequestError?) -> Void) in
             guard let user = self.userStore[id.value] else {
-                resondWith(nil, .notFound)
+                respondWith(nil, .notFound)
                 return
             }
-            resondWith(user, nil)
+            respondWith(user, nil)
         }
         
         router.post("/users") { (user: User?, respondWith: (User?, RequestError?) -> Void) in
