@@ -123,6 +123,73 @@ public class KituraKit {
         }
     }
     
+    /// Retrieves data from a designated route.
+    ///
+    /// ### Usage Example: ###
+    /// ````
+    /// let client = KituraKit.default
+    /// client.get("/") { (returnedArray: O?, error: Error?) -> Void in
+    ///    print(returnedArray)
+    /// }
+    /// ````
+    /// * This declaration of get is for custom non RESTFul Get Method. There are other declarations for specific RESTFul retrieval.
+    ///
+    /// - Parameter route: The custom route KituraKit points to during REST requests.
+    public func get<O: Codable>(_ route: String, respondWith: @escaping CodableResultClosure<O>) {
+        let url = baseURL.appendingPathComponent(route)
+        let request = RestRequest(url: url.absoluteString)
+        request.responseData { response in
+            switch response.result {
+            case .success(let data):
+                guard let item: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    respondWith(nil, RequestError.clientDeserializationError)
+                    return
+                }
+                respondWith(item, nil)
+            case .failure(let error):
+                Log.error("GET failure: \(error)")
+                if let restError = error as? RestError {
+                    respondWith(nil, RequestError(restError: restError))
+                } else {
+                    respondWith(nil, .clientErrorUnknown)
+                }
+            }
+        }
+    }
+    
+    /// Retrieves data from the client route path
+    ///
+    /// ### Usage Example: ###
+    /// ````
+    /// let client = KituraKit.default
+    /// client.get() { (returnedArray: O?, error: Error?) -> Void in
+    ///    print(returnedArray)
+    /// }
+    /// ````
+    /// * This declaration of get is for custom non RESTFul Get Method. There are other declarations for specific RESTFul retrieval.
+    ///
+    /// - Parameter route: The custom route KituraKit points to during REST requests.
+    public func get<O: Codable>(_ respondWith: @escaping CodableResultClosure<O>) {
+        let request = RestRequest(url: baseURL.absoluteString)
+        request.responseData { response in
+            switch response.result {
+            case .success(let data):
+                guard let item: O = try? JSONDecoder().decode(O.self, from: data) else {
+                    respondWith(nil, RequestError.clientDeserializationError)
+                    return
+                }
+                respondWith(item, nil)
+            case .failure(let error):
+                Log.error("GET failure: \(error)")
+                if let restError = error as? RestError {
+                    respondWith(nil, RequestError(restError: restError))
+                } else {
+                    respondWith(nil, .clientErrorUnknown)
+                }
+            }
+        }
+    }
+
     /// Sends data to a designated route.
     ///
     /// ### Usage Example: ###
